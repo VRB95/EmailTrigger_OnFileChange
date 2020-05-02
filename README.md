@@ -11,7 +11,7 @@
 This present the usage of [QFileSystemWatcher Class](https://doc.qt.io/archives/qt-4.8/qfilesystemwatcher.html) which monitors the file system for changes to files and directories by watching a list of specified paths. When the file that is monitored is changed in some way, a signal is emited and with the help of [smtplib — SMTP protocol client](https://docs.python.org/3/library/smtplib.html) an email is send tot an specific address. For simplicity, an User Interface was created with PyQt4.
 
 <p align="center">
-  <img src="img\screen1.png" alt="screen">
+  <img src="img\screen1.PNG" alt="screen">
 </p>
 
 <!-- TABLE OF CONTENTS -->
