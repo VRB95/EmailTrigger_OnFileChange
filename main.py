@@ -10,14 +10,13 @@ from time import sleep
 
 class ThreadedEmail(QtCore.QRunnable):
 
-    def __init__(self, path, login_email, login_password, receiver_email, delay, isAttachmentIncluded):
+    def __init__(self, path, login_email, login_password, receiver_email, delay):
         super().__init__()
         self.path = path
         self.login_email = login_email
         self.login_password = login_password
         self.receiver_email = receiver_email
         self.delay = delay
-        self.isAttachmentIncluded = isAttachmentIncluded
 
     def run(self):
         app = QtCore.QCoreApplication.instance()
@@ -26,8 +25,9 @@ class ThreadedEmail(QtCore.QRunnable):
         app.quit()
 
     def sendEmail(self):
-        subject = "Subject of Email"
-        body = "Body of Email"
+
+        subject = "Email SUBJECT"
+        body = "Email BODY"
         sender_email = self.login_email
         receiver_email = self.receiver_email
         password = self.login_password
@@ -43,22 +43,20 @@ class ThreadedEmail(QtCore.QRunnable):
         message.attach(MIMEText(body, "plain"))
         filename = self.path
 
-        if self.isAttachmentIncluded:
-            # Open PDF file in binary mode
-            with open(filename, "rb") as attachment:
-                # Add file as application/octet-stream
-                # Email client can usually download this automatically as attachment
-                part = MIMEBase("application", "octet-stream")
-                part.set_payload(attachment.read())
+        # Open PDF file in binary mode
+        with open(filename, "rb") as attachment:
+            # Add file as application/octet-stream
+            # Email client can usually download this automatically as attachment
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(attachment.read())
 
-            # Encode file in ASCII characters to send by email
-            encoders.encode_base64(part)
+        # Encode file in ASCII characters to send by email
+        encoders.encode_base64(part)
 
-            # Add header as key/value pair to attachment part
-            part.add_header('Content-Disposition', 'attachment', filename=filename)
-            # Add attachment to message and convert message to string
-            message.attach(part)
-
+        # Add header as key/value pair to attachment part
+        part.add_header('Content-Disposition', 'attachment', filename=filename)
+        # Add attachment to message and convert message to string
+        message.attach(part)
         text = message.as_string()
         port = 465  # For SSL
         server = smtplib.SMTP_SSL("smtp.gmail.com", port)
@@ -79,33 +77,28 @@ class UserInterface(QtGui.QWidget):
             open(settingsFile, 'a').close()
         self.settings = QSettings(settingsFile, QSettings.IniFormat)
         self.settings.setFallbacksEnabled(False)
-        self.loadSettings()
-        
         self.initUI()
+        self.loadSettings()
         self.isFileWatcherOn = False
+
 
     def initUI(self):
 
         self.choseFile_btn = QtGui.QPushButton('Chose File', self)
         self.choseFile_btn.clicked.connect(self.fileOpen)
         self.choseFile_txtLine = QtGui.QLineEdit()
-        
         self.email_lbl = QtGui.QLabel("Enter your Gmail")
         self.email_txtLine = QtGui.QLineEdit()
-        
         self.startWatcher_btn = QtGui.QPushButton('Start Watcher', self)
         self.startWatcher_btn.clicked.connect(self.startFileWatcher)
         self.startWatcher_btn.setStyleSheet("background-color: #EE3F36")
 
         self.saveSettings_btn = QtGui.QPushButton('Save Settings', self)
         self.saveSettings_btn.clicked.connect(self.saveSettings)
-        
         self.loadSettings_btn = QtGui.QPushButton('Load Settings', self)
         self.loadSettings_btn.clicked.connect(self.loadSettings)
-        
         self.delay_spinbox = QtGui.QSpinBox()
         self.delay_spinbox.valueChanged.connect(self.setDelay)
-        
         self.groupbox = QtGui.QGroupBox("Settings")
         self.console = QtGui.QPlainTextEdit()
 
@@ -144,11 +137,11 @@ class UserInterface(QtGui.QWidget):
 
         fileWatcherLayout_4 = QtGui.QHBoxLayout()
         fileWatcherLayout_4.addWidget(self.console)
-        
         mainLayout.addLayout(fileWatcherLayout_1)
         mainLayout.addLayout(fileWatcherLayout_2)
         mainLayout.addLayout(fileWatcherLayout_3)
         mainLayout.addLayout(fileWatcherLayout_4)
+
 
     def fileOpen(self):
         path = QtGui.QFileDialog.getOpenFileName(self, 'Open File')
@@ -160,7 +153,7 @@ class UserInterface(QtGui.QWidget):
 
     def startThreadandEmitSignals(self):
         self.writeOnConsole("Start Counter: " + str(self.delay) + " seconds")
-        self.threadedEmail = ThreadedEmail(self.path, self.login_email, self.login_password, self.receiver_email, self.delay, False)
+        self.threadedEmail = ThreadedEmail(self.path, self.login_email, self.login_password, self.receiver_email, self.delay)
         QtCore.QThreadPool.globalInstance().start(self.threadedEmail)
 
     def writeOnConsole(self, text):
@@ -192,10 +185,10 @@ class UserInterface(QtGui.QWidget):
     def loadSettings(self):
         self.writeOnConsole("Settings Loaded")
         # --> If exists, get setting from *.ini and store in variables, else initialize them
-        self.login_email = str(self.settings.value('login_email', '********'))
-        self.login_password = str(self.settings.value('login_password', "*********"))
-        self.receiver_email = str(self.settings.value('receiver_email', ""))
-        self.path = str(self.settings.value('file_path', "********"))
+        self.login_email = str(self.settings.value('login_email', "***"))
+        self.login_password = str(self.settings.value('login_password', "***"))
+        self.receiver_email = str(self.settings.value('receiver_email', "***"))
+        self.path = str(self.settings.value('file_path', "***"))
         self.email_txtLine.setText(self.receiver_email)
         self.choseFile_txtLine.setText(self.path)
         self.delay = int(self.settings.value('delay', 10))
