@@ -78,7 +78,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Vesa Bogdan - vesabogdan95@gmail.com
 
-Project Link: [https://github.com/vesa95/SimpleSync](https://github.com/vesa95/SimpleSync)
+Project Link: [https://github.com/VRB95/EmailTrigger_OnFileChange](https://github.com/VRB95/EmailTrigger_OnFileChange)
 
 
 
